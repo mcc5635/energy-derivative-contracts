@@ -14,9 +14,9 @@ mean_temp = 10  # Mean daily temperature
 sd_temp = 5  # Standard deviation of daily temperatures
 
 # Japan Energy Grid Parameters
-mean_energy = 100 # Arbitrary avg energy consumption in GWh
-std_energy = 10 # standard deviation of daily consumption
-change_threshold = 0.10 #10% change threshold for contract payouts
+mean_energy = 100  # Arbitrary avg energy consumption in GWh
+std_energy = 10  # Standard deviation of daily consumption
+change_threshold = 0.10  # 10% change threshold for contract payouts
 
 # Pricing Engine
 class ThermalEnergyDerivative:
@@ -50,13 +50,6 @@ class ThermalEnergyDerivative:
           temperatures_list.append(np.mean(temperatures))  # Collect mean temperature for correlation
         return payouts, temperatures_list
     
-    def plot_payout_distribution(self, payouts):
-        plt.hist(payouts, bins=50, color='blue', edgecolor='black', alpha=0.7)
-        plt.title('Distribution of Contract Payouts')
-        plt.xlabel('Contract Payout (JPY)')
-        plt.ylabel('Frequency Density')
-        plt.show()
-    
     def plot_daily_temperatures(self, temperatures):
         plt.figure(figsize=(12, 6))
         plt.plot(temperatures, color='blue')
@@ -65,29 +58,11 @@ class ThermalEnergyDerivative:
         plt.ylabel('Temperature (°C)')
         plt.show()
     
-    def plot_payout_boxplot(self, payouts):
-        plt.figure(figsize=(8, 6))
-        plt.boxplot(payouts, vert=True, patch_artist=True)
-        plt.title('Boxplot of Contract Payouts')
-        plt.ylabel('Payout (JPY)')
-        plt.show()
-
-    def plot_payout_cdf(self, payouts, threshold=0.9):
-        sorted_payouts = np.sort(payouts)
-        cdf = np.arange(len(sorted_payouts)) / float(len(sorted_payouts))
+    def plot_payout_vs_energy(self, energy_consumption, payouts):
         plt.figure(figsize=(10, 6))
-        plt.plot(sorted_payouts, cdf, color='blue')
-        plt.axhline(y=threshold, color='red', linestyle='--')
-        plt.title('CDF of Contract Payouts')
-        plt.xlabel('Payout (JPY)')
-        plt.ylabel('Cumulative Probability')
-        plt.show()
-    
-    def plot_temp_vs_payout(self, temperatures, payouts):
-        plt.figure(figsize=(10, 6))
-        plt.scatter(temperatures, payouts, alpha=0.5, color='blue')
-        plt.title('Temperature vs. Contract Payout')
-        plt.xlabel('Mean Temperature (°C)')
+        plt.scatter(energy_consumption, payouts, alpha=0.5, color='blue')
+        plt.title('Energy Consumption vs. Contract Payout')
+        plt.xlabel('Energy Consumption (GWh)')
         plt.ylabel('Payout (JPY)')
         plt.show()
 
@@ -110,7 +85,7 @@ def plot_energy_payout_distribution(payouts):
     mean_payout = np.mean(payouts)
     std_payout = np.std(payouts)
 
-    plt.figure(figsize=(10,6))
+    plt.figure(figsize=(10, 6))
     plt.hist(payouts, bins=30, alpha=0.7, color='blue', edgecolor='black', density=True)
 
     title = f"Distribution of Japanese Energy Contract Payouts\nMean = {mean_payout:.4f}, Std Dev = {std_payout:.4f}"
@@ -125,7 +100,6 @@ def plot_energy_payout_distribution(payouts):
     print(f"Min payout: {min(payouts):.4f}")
     print(f"Max payout: {max(payouts):.4f}")
 
-
 # ThermalEnergyDerivative Class Instance
 thermal_contract = ThermalEnergyDerivative(n_days, base_temperature, strike_price, tick, mean_temp, sd_temp)
 
@@ -136,10 +110,6 @@ thermal_contract.plot_daily_temperatures(temperatures)
 # Monte Carlo Simulation Results
 payouts, mean_temperatures = thermal_contract.monte_carlo_simulation(n_simulations)
 print(f'Payout Summary:\n{np.percentile(payouts, [0, 25, 50, 75, 100])}')
-thermal_contract.plot_payout_distribution(payouts)
-thermal_contract.plot_payout_boxplot(payouts)
-thermal_contract.plot_payout_cdf(payouts)
-thermal_contract.plot_temp_vs_payout(mean_temperatures, payouts)
 print(payouts)
 
 # Instance Run With Sample Data
@@ -148,3 +118,7 @@ energy_data = generate_energy_data(days, mean_energy, std_energy)
 energy_payouts = calculate_energy_payouts(energy_data, change_threshold)
 plot_energy_payout_distribution(energy_payouts)
 
+# Calculate energy consumption vs. contract payouts
+energy_consumption = generate_energy_data(n_days, mean_energy, std_energy)
+energy_payouts = calculate_energy_payouts(energy_consumption, change_threshold)
+thermal_contract.plot_payout_vs_energy(energy_consumption[:len(energy_payouts)], energy_payouts)
