@@ -86,4 +86,4 @@ Ticks are predefined monetary values per unit of energy metric (e.g., USD/HDD, E
 
 ---
 
-For more detailed information, please refer to the data provided in the `../data/derivative-contracts.csv` file.
+For more detailed information, please refer to the data provided in the `./data/derivative-contracts.csv` file.
