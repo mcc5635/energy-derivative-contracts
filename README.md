@@ -84,6 +84,12 @@ The payout mechanism defines how the payout is calculated based on the differenc
 
 Ticks are predefined monetary values per unit of energy metric (e.g., USD/HDD, EUR/MWh) that correlate with the costs or benefits associated with the changes in the energy metrics.
 
+### Acceptable Inputs
+
+- **USD/HDD**: United States Dollars per Heating Degree Day
+- **EUR/MWh**: Euros per Megawatt Hour
+- **$/MWh**: Dollars per Megawatt Hour
+
 ---
 
 For more detailed information, please refer to the data provided in the `./data/derivative-contracts.csv` file.
